@@ -1,3 +1,7 @@
+---
+nav_exclude: true
+---
+
 ### Inductive Families and Inductive Predicates
 
 Recall the

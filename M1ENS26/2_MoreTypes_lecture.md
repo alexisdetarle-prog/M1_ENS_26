@@ -1,3 +1,7 @@
+---
+nav_exclude: true
+---
+
 # More on Types
 
 So far, we've seen how to *work* with types, and we want to give a somewhat more robust account of their theory.

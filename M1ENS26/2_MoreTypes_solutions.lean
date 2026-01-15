@@ -192,6 +192,7 @@ def JustOne_fun : ℕ → ENS_Nat
   | 0 => ENS_zero
   | Nat.succ m => ENS_succ (JustOne_fun m)
 
+
 --This we leave as an exercise...
 def JustOne_inv : ENS_Nat → ℕ
   | ENS_zero => 0
@@ -203,17 +204,20 @@ def JustOne_inv : ENS_Nat → ℕ
 end Structures
 
 
+section Exercise
 -- # Exercises
 
--- Exercise
+-- **Exercise**
 -- What is the type of `¬`?
 -- It is `Prop → Prop`:
 #check Not
 
+-- **Exercise**
+-- Why is `¬ P : Prop` when `P : Prop`?
+-- Both `P : Prop` and `False : Prop`, so `P → False : Prop`.
 
-section Exercise
 
--- Exercise
+-- **Exercise**
 /- Consider the function `F` sending `n : ℕ` to the statement\
 `0 ≠ n ∧ (∀ α : Type 2, ∃ v w : Vector α n), v ≠ w`)
 1. How do you expect `F 2` to look like?
@@ -236,9 +240,6 @@ section Exercise
 -- impossible to find two different 2-dimensional vectors.
 -- *6.* `F` is of type `ℕ ↦ Prop`, of level `Type 0`.
 
--- **Exercise**
--- Why is `¬ P : Prop` when `P : Prop`?
--- Both `P : Prop` and `False : Prop`, so `P → False : Prop`.
 
 -- **Exercise**
 example : True → True := by
@@ -275,18 +276,20 @@ example (h : ¬ (2 = 2)) : P → Q := by
 
 open Function
 
+
+/- **Exercise**
+In the following steps, you're required to complete the proof that `JustOne` is an equivalence
+between `ENS_Nat` and `ℕ`. -/
+open ENS_Nat
+
+
 def JustOne_Left : LeftInverse JustOne_inv JustOne_fun := by
   intro n
-  induction' n with m hm
-  · rfl
-  · rw [JustOne_fun, JustOne_inv, hm]
-  -- *Alternative, **recursive**, proof*, without induction
-  -- match n with
-  -- | 0 => rfl
-  -- | Nat.succ m =>
-  --     rw [JustOne_fun, JustOne_inv, JustOne_Left]
+  induction n with --I've pre-populated the structure, but if you type `induction n with`, Lean asks
+  -- for the right fields
+  | zero => rfl
+  | succ m hm => rw [JustOne_fun, JustOne_inv, hm]
 
---This we leave as an exercise...
 def JustOne_Right : RightInverse JustOne_inv JustOne_fun
   | ENS_zero => rfl
   | ENS_succ m => by rw [JustOne_inv, JustOne_fun, JustOne_Right]
@@ -299,13 +302,15 @@ def JustOne : ℕ ≃ ENS_Nat where
   right_inv := JustOne_Right
 
 
--- **2** The successor is not surjective, but you can't rely on the library this time.
+/- **Exercise**
+The successor is not surjective, but you can't rely on the library. -/
 example : ¬ Surjective ENS_succ := by
   intro habs
   obtain ⟨a, ha⟩ := habs ENS_zero
   cases ha
 
-/- **3** Define an inductive type `Politics` with two terms : `Right` and `Left`-/
+/- **Exercise**
+   Define an inductive type `Politics` with two terms : `Right` and `Left`-/
 inductive Politics
   | Right : Politics
   | Left : Politics
@@ -313,12 +318,14 @@ inductive Politics
 -- leave this line as it is
 open Politics
 
-/- **4** Define a function `swap : Politics → Politics` sending `Right` to `Left` and viceversa-/
+/- **Exercise**
+Define a function `swap : Politics → Politics` sending `Right` to `Left` and viceversa-/
 def swap : Politics → Politics
   | Right => Left
   | Left => Right
 
-/- **5** Prove that if someone is not on the `Right`, they are on the `Left` -/
+/- **Exercise**
+Prove that if someone is not on the `Right`, they are on the `Left` -/
 example (a : Politics) : a ≠ Right → a = Left := by
   intro ha
   cases a
@@ -366,88 +373,5 @@ example : (P ∨ Q) ∨ R ↔ P ∨ Q ∨ R := by
 
 
 
--- **1** Recall the `repeat` tactic
-example : ¬ IsEven 111 := by
-  intro h
-  repeat rcases h with _ | ⟨-, h⟩
 
-
--- Let's consider the *set* of even numbers satisfying `IsEven`
-abbrev Evens := setOf IsEven
-
-/- **2** Show that the two set of even numbers we defined are actually the same.
-To translate `IsEven d` into `d ∈ Even` you can use `mem_setOf_eq`. -/
-lemma EvenEq (n : ℕ) : n ∈ EvenNaturals ↔ n ∈ Evens := by
-  induction' n with m h_ind
-  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · exact IsEven.zero_even
-    · trivial--rfl -- notice the difference!
-  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · rw [mem_setOf_eq, not_IsEven_succ]
-      replace h : (m + 1) % 2 = 0 := h.out
-      replace h : m % 2 = 1 := by
-        rwa [Nat.succ_mod_two_eq_zero_iff] at h
-      replace h : m ∉ EvenNaturals := by
-        intro hm
-        replace hm := hm.out
-        rw [hm] at h
-        exact zero_ne_one h
-      replace h_ind : ¬ IsEven m := (h_ind.mpr).mt h
-      rcases m with _ | ⟨n, hn⟩
-      · exfalso
-        apply h
-        rfl
-      · intro h
-        rcases h with _ | ⟨-, h⟩
-        cases h
-      · rwa [Nat.add_assoc, ← not_isEven_succ_succ]
-    · rw [mem_setOf_eq, not_IsEven_succ] at h
-      replace h : ¬ IsEven m := by
-        intro h
-        replace h := h.succ_succ
-        trivial
-      replace h_ind := h_ind.mp.mt h
-      replace h_ind : ¬ m % 2 = 0 := h_ind
-      rw [Nat.mod_two_ne_zero] at h_ind
-      rw [← Nat.succ_mod_two_eq_zero_iff] at h_ind
-      exact h_ind
-
--- **3** Prove that every even number can be divided by `2`.
-lemma exists_half (n : Evens) : ∃ d : ℕ, n = 2 * d := by
-  have hn := n.2
-  replace hn : n.1 % 2 = 0 := by
-    rwa [← EvenEq] at hn
-  replace hn := Nat.dvd_of_mod_eq_zero hn
-  exact ⟨hn.choose, hn.choose_spec⟩
-
-noncomputable
-def half : Evens → (univ : Set ℕ) := fun n ↦ ⟨(exists_half n).choose, trivial⟩
-
--- **4** Doubling and halving is the identity.
-lemma double_half (n : Evens) : n = 2 * (half n).1 := by
-  exact (exists_half n).choose_spec
-
--- **5** Some more fun with functions.
-example : InjOn half univ := by
-  rintro ⟨n, hn⟩ - ⟨m, hm⟩ - h
-  simp only [coe_setOf, mem_setOf_eq, Subtype.mk.injEq]
-  have hhn := double_half ⟨n, hn⟩
-  rw [h, ← double_half] at hhn
-  exact hhn
-
--- **6** Even more fun!
-example : Surjective half := by
-  rintro ⟨n, -⟩
-  have hn : 2 * n ∈ Evens := by
-    rw [← EvenEq]
-    show 2 * n % 2 = 0
-    omega
-  let a : Evens := ⟨2 * n , hn⟩
-  use a
-  have := double_half a
-  rw [Nat.mul_right_inj] at this
-  rw [this]
-  omega
-
-
-end InductiveFamilies
+end Exercise
