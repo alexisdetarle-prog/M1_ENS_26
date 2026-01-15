@@ -5,12 +5,12 @@ url: https://faenuccio-teaching.github.io
 baseurl: "/M1_ENS_26"
 repository: faenuccio-teaching/M1_ENS_26
 
-# remote_theme: pages-themes/cayman@v0.2.0
-remote_theme: pages-themes/minimal@v0.2.0
+# remote_theme: pages-themes/minimal@v0.2.0
+remote_theme: just-the-docs/just-the-docs
 #
 plugins:
   - jekyll-remote-theme
-  - jekyll-github-metadata
+  # - jekyll-github-metadata
 
 keep_files:
   - docs
@@ -18,3 +18,13 @@ keep_files:
 
 # Sidebar links
 show_downloads: true
+
+
+# the items below are only used for `OnlyTheDoc`
+nav:
+  - title: Home
+    url: /
+  - title: Documentation
+    url: /docs/
+  - title: GitHub
+    url: https://github.com/faenuccio-teaching/M1_ENS_26

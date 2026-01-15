@@ -1,5 +1,8 @@
 ---
 layout: default
+# the two items below are only used for `OnlyTheDoc`
+title: 
+nav_order: 1
 ---
 
 # Bienvenue
