@@ -3,6 +3,8 @@ description: ""
 url: https://faenuccio-teaching.github.io
 baseurl: "/M1_ENS_26"
 repository: faenuccio-teaching/M1_ENS_26
+layout: default
+nav_enabled: true
 
 remote_theme: just-the-docs/just-the-docs
 plugins:
