@@ -1,6 +1,6 @@
----
+<!-- ---
 nav_exclude: true
----
+--- -->
 
 # Tactics and Types
 
