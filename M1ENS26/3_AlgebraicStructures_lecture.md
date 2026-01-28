@@ -125,12 +125,50 @@ the set is multiplicatively closed (a "mixin").
 #### Quotients and Morphisms
 See [here](https://github.com/faenuccio-teaching/M2Lyon2425/blob/afcb059590adbe169d3e03ce50277ef920a9b567/M2Lyon2425/Groups2_solutions.lean#L465)
 
-## Rings
+# Rings
 
-** Borrow from** https://github.com/faenuccio-teaching/GradCourse25/blob/master/GradCourse25/3_AlgebraicStructures_lecture.pdf **adding ring and grind**
+As for groups, the way to say that `R` is a ring is to type
 
-1. Def, Ideals, `CommRing`, `IsDomain`  
-2. `grind`, `ring`
+    (R : Type*) [Ring R]
+
+The library is particularly rich insofar as *commutative* rings are concerned, and we're going to stick to those in our course. The tactic `ring` solves claim about basic relations in commutative rings.
+
+Given what we know about groups and monoids, we can expect a commutative ring to have several "weaker" structures: typically these can be accessed through a `.toWeakStructure` projection.
+
+`⌘`
+
++++ Morphisms and Ideals
+
+* Morphisms work as for groups: they are simply functions respecting both structures on a ring, that of a multiplicative monoid and of an additive group: so, they're simply respecting both monoid structures, hence the notation `R →+* S` for a ring homomorphism. Of course, `≃+*` denotes ring isomorphism, so `R ≃+* S` is the **type** of all ring homomorphisms from `R` to `S`.
+
+* Ideals 
+
+They're defined building upon the overarching structure of `Module`s, but it won't matter for us. Suffices it to say that in the following setting
+
+        example (R : Type*) [CommRing R] (I : Ideal R)
+
+the type `Ideal R` consists of all ideals `I ⊆ R`; hence, a term `I : Ideal R` is such that
+
+        | I.carrier : Set R
+        | I.zero_mem : (0 : R) ∈ I
+        | I.add_mem (x y : R) : x ∈ I → y ∈ I → x + y ∈ I
+        | I.smul_mem (x y : R) : x ∈ I → x • y ∈ I
+
+The `smul_mem` field is part of the definition, but it is sometimes handier to use either of
+
+        I.mul_mem_left (a b : R) : b ∈ I → a * b ∈ I
+
+or
+
+        I.mul_mem_right (a b : R) : a ∈ I → a * b ∈ I
+
+
+As for subgroups, the type `Ideal R` is ordered, and the ideal `{0} : Ideal R` is actually `⊥` whereas
+`R : Ideal R` is `⊤`.
+
+`⌘`
+`grind`, `ring`
+
 3. `#synth CommRing ℤ`
 4. [Units](https://github.com/faenuccio-teaching/M2Lyon2425/blob/afcb059590adbe169d3e03ce50277ef920a9b567/M2Lyon2425/Rings1_solutions.lean#L127)
 5. [Ring Homs](https://github.com/faenuccio-teaching/M2Lyon2425/blob/afcb059590adbe169d3e03ce50277ef920a9b567/M2Lyon2425/Rings1_solutions.lean#L173)
