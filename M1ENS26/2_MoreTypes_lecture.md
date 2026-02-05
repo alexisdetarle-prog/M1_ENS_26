@@ -22,7 +22,7 @@ Lean shortens `Type 0` to `Type`, omitting the index. It is where most known mat
 
 ## Dependent types
 
-The type theory that Lean is built upon axiomatises the existence of certain constructions.
+The type theory that Lean is built upon axiomatises the existence of certain constructions that allow to construct new types out of known ones.
 
 +++ Function types
 Given two types `X` and `Y`, it exists the type `X → Y`. Its terms are written
@@ -31,7 +31,7 @@ Given two types `X` and `Y`, it exists the type `X → Y`. Its terms are written
 ```
 or
 ```
-fun (x : X) ↦ f x : Y
+fun (x : X) ↦ f x
 ```
 These terms can be interpreted as functions from `X` to `Y`, in the sense that if `x₀ : X` and `f : X → Y` then `f x` is a term in `Y`.
 
@@ -49,6 +49,7 @@ namely the assignment sending a type to its identity function?
 
 The "problem" is that for every element in the domain, the image lies in a different place: there is no "codomain".
 
+
 It belongs to the Π-type (called pi-type, or forall-type, or *dependent* product)
 ```
 Π (α : Type), α → α
@@ -56,7 +57,7 @@ It belongs to the Π-type (called pi-type, or forall-type, or *dependent* produc
 (α : Type) → (α → α)
 ```
 
-More generally, given a type `A` (where `A = Sort u` is allowed) and a function `I : A → Sort v`, seen as an "indexing family",
+More generally, given a type `A` (where `A = Sort u` is allowed), seen as an index set, and a function `I : A → Sort v`, seen as an "indexing family",
 ```
 Π (a : A), I a
 ∀ (a : A), I a
@@ -73,7 +74,7 @@ Similarly, terms of the Σ-type
 Σ (a : A), I a
 (a : A) × I a
 ```
-are pairs `⟨a, xₐ⟩` where `xₐ : I a` (for technical reasons, we need here that `A : Type u` and  that `I : A → Type v`: if you really want to use `Sort` use Σ', or ×').
+are pairs `⟨a, xₐ⟩` where `xₐ : I a` (for technical reasons, we need here that `A : Type u` and  that `I : A → Type v`: if you really want to use `Sort` use Σ', or ×'). Type `×` (*resp.* `×'`) as `\x` (*resp.* `\x'`).
 
 * These constructions of types that depend on terms give the name "dependent type theory" (or "dependent λ-calculus") to the underlying theory.
 
@@ -93,7 +94,7 @@ It is a Π-type, with `I : ℕ → Prop` being `I := fun n ↦ ∃ p prime, n < 
 
 Euclid's proof is a *term* of the above type.
 
-* You can *prove* a ∀ by `intro`ducing a variable (thought of as a "generic element", do `intro x` to call this element `x`), and by proving `P x`.
+* You can *prove* a ∀ by `intro`ducing a variable via `intro x`, and by proving `P x`.
 * If you have `H : ∀ x : α, P x` and also a term `y : α`, you can specialise `H` to `y`:
 
         specialize H y (:= P y)
@@ -102,13 +103,13 @@ Euclid's proof is a *term* of the above type.
 
 
 #### Existential quantifier
-Similarly, consider the statement
+A statement
 ```math
-∃\; n ∈ ℕ, n^2+37 · n < 2 ^ n.
+∃\; n ∈ ℕ, n^2+37 · n < 2 ^ n
 ```
-This is a Σ-type `(n : ℕ) × I n`, where `I := λ n ↦ (n ^ 2 + 37 * n < e ^ n) : Prop`: a term in it would be a pair `⟨n, hₙ⟩` where `n : ℕ` and `hₙ` is a proof that `n ^ 2 + 37 * n < e ^ n`.
+lives in `Prop`, so you *cannot extract a witness from an existential proof*, unless you want to extract a term in some other `P : Prop`.
 
-Once more,
+But,
 * To prove `∃ x, P x`, you first produce `x`, and then prove it satisfies `P x`: once you have constructed `x`, do `use x` to have Lean ask you for `⊢ P x`.
 * If you have `H : ∃ x, P x`, do `obtain ⟨x, hx⟩ := H` to obtain the term `x` together with a proof that `P x`.
 
@@ -127,7 +128,9 @@ Once more,
       h : ¬ P
       ⊢ False
 
-* The difference between `exfalso` and `by_contra` is that the first does not introduce anything, and forgets the actual goal; the second negates the goal and asks for `False`.
+The difference between `exfalso` and `by_contra` is that the first does not introduce anything, and forgets the actual goal; the second negates the goal and asks for `False`.
+
+* `contrapose` is the tactic that changes a goal `P → Q` to `¬ Q → ¬ P`.
 
 `⌘`
 +++

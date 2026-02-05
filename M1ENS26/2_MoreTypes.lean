@@ -42,14 +42,13 @@ variable {A : Sort u} (I : A → Sort v)
 #check (a : A) → I a
 #check Σ' (a : A), I a--(a : A), I a
 #check (a : A) × I a--(a : A), I a
-#check (a : ℕ) ×' ((fun n ↦ ∃ m : ℕ, n < m) a)
 
 variable {A' : Type u} (J : A' → Type v)
 #check (a : A') × J a
 
 -- `⌘`
 
--- Euclid's proof, using impredicativity
+-- Euclid's proof, exhibiting the power of impredicativity
 def Euclid_n : ℕ → Prop := fun n ↦ ∃ p, Nat.Prime p ∧ n < p
 def Euclid_all : Prop := (n : ℕ) → (Euclid_n n)
 def Euclid_forall : Prop := ∀ n, ∃ p, Nat.Prime p ∧ n < p
@@ -59,6 +58,20 @@ theorem Euclid_all_proof : Euclid_all := by
   sorry
 
 theorem exists_p_gt_100 (E : Euclid_forall) : ∃ p, Nat.Prime p ∧ 100 < p := by
+  specialize E 100
+  exact E
+  -- exact E 100
+
+
+#check (∃ n : ℕ, n ^ 2 + 37 * n < 2 ^ n)
+
+#check (a : ℕ) ×' ((fun n ↦ ∃ m : ℕ, n < m) a)
+#check (⟨3,  ⟨42, by norm_num⟩⟩ : (a : ℕ) ×' ((fun n ↦ ∃ m : ℕ, n < m) a))
+
+example (h : ∃ x : ℕ, 1 < x) : ℕ := by
+  sorry
+
+example (h : ∃ x : ℕ, 1 < x) : 1 < 2 := by
   sorry
 
 example : ∃ x : ℝ, Real.sin x = 0 := by
@@ -126,6 +139,9 @@ inductive ENS_Or (p q : Prop) : Prop
 example (n : ℕ) : ENS_Or (n = 0) (∃ m, n = Nat.succ m) := by
   sorry
 
+example (n : ℕ) : ENS_Or (n = 0) (∃ m, n = Nat.succ m) := by
+  sorry
+
 
 -- `⌘`
 
@@ -188,12 +204,9 @@ section Exercises
 
 -- **Exercise**
 -- What is the type of `¬`?
--- It is `Prop → Prop`:
-#check Not
 
 -- **Exercise**
 -- Why is `¬ P : Prop` when `P : Prop`?
--- Both `P : Prop` and `False : Prop`, so `P → False : Prop`.
 
 
 -- **Exercise**
@@ -209,6 +222,8 @@ section Exercises
 6. Is `F 2` true?
 7. What is the type of `F` and to which universe level does this type belong?
 -/
+
+variable (α : Type*) (p q : α → Prop) -- Use `\alpha` to write `α`
 
 -- **Exercise**
 example : True → True := by
@@ -234,6 +249,41 @@ example : (P → ¬ Q) → (Q → ¬ P) := by
 example (h : ¬ (2 = 2)) : P → Q := by
   sorry
 
+-- **Exercise**
+example : (∀ x : α, p x ∧ q x) → ∀ x : α, p x := by
+  sorry
+
+-- **Exercise**
+example : (∀ x, p x ∨ R) ↔ (∀ x, p x) ∨ R := by
+  sorry
+
+-- **Exercise**
+example (h : ∃ x, p x ∧ q x) : ∃ x, p x := by
+  sorry
+
+-- **Exercise**
+example (h : ∃ x, p x ∧ q x) : ∃ x, q x ∧ p x := by
+  sorry
+
+-- **Exercise**
+example (a : α) : (∃ x, p x → R) ↔ ((∀ x, p x) → R) := by
+  sorry
+
+-- **Exercise**
+example : (∃ x, p x ∨ q x) ↔ (∃ x, p x) ∨ (∃ x, q x) := by
+  sorry
+
+-- **Exercise**
+example : (∀ x, p x) ↔ ¬ (∃ x, ¬ p x) := by
+  sorry
+
+-- **Exercise**
+example : (∃ x, p x) ↔ ¬ (∀ x, ¬ p x) := by
+  sorry
+
+-- **Exercise**
+example : (∀ x, p x → R) ↔ (∃ x, p x) → R := by
+  sorry
 
 open Function
 
